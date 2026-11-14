@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Sublim | Restaurant à Belfort</title>
+<meta name="description" content="Le Sublim, restaurant au 9 rue Thiers à Belfort : cuisine raffinée, produits frais, carte de saison. Réservation au 03 63 14 30 60.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { serif: ['Playfair Display','serif'], sans: ['Plus Jakarta Sans','sans-serif'] },
+  colors: { sublim: { dark:'#0a1020', card:'#111a2e', blue:'#5b8def', navy:'#2f56b3' } }
+}}}
+</script>
+<style>
+  html { scroll-padding-top: 5.5rem; }
+  :focus-visible { outline: 2px solid #5b8def; outline-offset: 3px; }
+  #embers { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .shimmer { background: linear-gradient(100deg,#3d6fd1 20%,#d6e4ff 45%,#5b8def 55%,#3d6fd1 80%); background-size:250% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent; animation: shimmer 5s ease-in-out infinite; }
+  @keyframes shimmer { 0%,100%{background-position:100% 0} 50%{background-position:0 0} }
+  .rise { opacity:0; transform:translateY(18px); animation: rise .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes rise { to { opacity:1; transform:none; } }
+  .reveal { opacity:0; transform:translateY(14px); transition: opacity .7s, transform .7s; }
+  .reveal.in { opacity:1; transform:none; }
+  .dish { transition: background-color .3s, padding-left .3s; }
+  .dish:hover { background: rgba(91,141,239,.05); padding-left: .75rem; }
+  .tab[aria-selected="true"] { background:#5b8def; color:#000; border-color:#5b8def; }
+  .dot { box-shadow: 0 0 0 0 currentColor; animation: pulse 2s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer,.dot { animation:none; color:#5b8def; background:none; -webkit-text-fill-color:#5b8def; }
+    .rise,.reveal { opacity:1; transform:none; animation:none; transition:none; }
+  }
+</style>
+</head>
+<body class="bg-sublim-dark text-gray-100 font-sans antialiased selection:bg-sublim-blue selection:text-black">
+
+<!-- Navigation -->
+<header class="fixed top-0 inset-x-0 z-50 bg-sublim-dark/90 backdrop-blur-md border-b border-white/10">
+  <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="#" class="font-serif text-2xl font-bold tracking-wider text-sublim-blue">LE SUBLIM</a>
+    <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide" aria-label="Navigation principale">
+      <a href="#menu" class="hover:text-sublim-blue transition-colors">La carte</a>
+      <a href="#about" class="hover:text-sublim-blue transition-colors">L’histoire</a>
+      <a href="#reserver" class="hover:text-sublim-blue transition-colors">Réserver</a>
+      <a href="#contact" class="hover:text-sublim-blue transition-colors">Contact et horaires</a>
+    </nav>
+    <a href="tel:0363143060" class="bg-sublim-blue text-black font-semibold px-5 py-2.5 rounded-full text-sm hover:bg-white transition-colors shadow-lg shadow-sublim-blue/10">Réserver une table</a>
+  </div>
+</header>
+
+<!-- Hero : braises dorées qui s’élèvent (sublimation) -->
+<section class="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_70%,rgba(30,58,138,0.40)_0,transparent_55%),radial-gradient(circle_at_center,rgba(91,141,239,0.10)_0,transparent_65%)]"></div>
+  <canvas id="embers" aria-hidden="true"></canvas>
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <p class="rise inline-block text-sublim-blue text-sm font-medium mb-5 px-4 py-1.5 rounded-full border border-sublim-blue/30 bg-sublim-blue/5" style="animation-delay:.1s">
+      9 rue Thiers, 90000 Belfort
+    </p>
+    <h1 class="rise font-serif text-5xl md:text-7xl font-bold mb-6 tracking-tight leading-tight" style="animation-delay:.3s">
+      L’art de la table <br><span class="italic font-normal shimmer">sublimé</span> à Belfort
+    </h1>
+    <p class="rise text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-8 font-light" style="animation-delay:.55s">
+      Une cuisine raffinée, généreuse et authentique au cœur du centre-ville. Des produits frais, cuisinés avec passion.
+    </p>
+    <p id="status" class="rise inline-flex items-center gap-2 text-sm text-gray-300 mb-8" style="animation-delay:.7s" aria-live="polite"></p>
+    <div class="rise flex flex-col sm:flex-row items-center justify-center gap-4" style="animation-delay:.85s">
+      <a href="#menu" class="w-full sm:w-auto bg-sublim-blue text-black font-semibold px-8 py-4 rounded-full hover:bg-white transition-colors">Découvrir la carte</a>
+      <a href="#reserver" class="w-full sm:w-auto border border-white/20 px-8 py-4 rounded-full hover:bg-white/10 transition-colors">Réserver une table</a>
+    </div>
+  </div>
+</section>
+
+<!-- Carte -->
+<section id="menu" class="py-24 px-6 bg-sublim-card/50 border-t border-white/5">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-10 reveal">
+      <h2 class="font-serif text-4xl font-bold mb-3">Notre carte</h2>
+      <p class="text-gray-400">Des suggestions de saison élaborées par notre chef</p>
+    </div>
+    <div class="flex justify-center gap-3 mb-12 reveal" role="tablist" aria-label="Filtrer la carte">
+      <button class="tab px-5 py-2 rounded-full border border-white/20 text-sm font-medium transition-colors" role="tab" aria-selected="true" data-f="all">Tout</button>
+      <button class="tab px-5 py-2 rounded-full border border-white/20 text-sm font-medium transition-colors" role="tab" aria-selected="false" data-f="plat">Plats</button>
+      <button class="tab px-5 py-2 rounded-full border border-white/20 text-sm font-medium transition-colors" role="tab" aria-selected="false" data-f="dessert">Douceurs</button>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div data-group="plat" class="space-y-6 reveal">
+        <h3 class="font-serif text-2xl text-sublim-blue border-b border-white/10 pb-3">Les plats signatures</h3>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Risotto crémeux aux cèpes</h4><p class="text-sm text-gray-400 font-light mt-1">Parmesan affiné 24 mois, éclats de noisettes torréfiées</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">24 €</span>
+        </div>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Pavé de bœuf Angus</h4><p class="text-sm text-gray-400 font-light mt-1">Jus corsé au thym, écrasé de pommes de terre à l’huile d’olive</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">28 €</span>
+        </div>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Filet de bar rôti sur peau</h4><p class="text-sm text-gray-400 font-light mt-1">Légumes anciens glacés, émulsion citron-câpres</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">26 €</span>
+        </div>
+      </div>
+
+      <div data-group="dessert" class="space-y-6 reveal">
+        <h3 class="font-serif text-2xl text-sublim-blue border-b border-white/10 pb-3">Les douceurs</h3>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Tiramisu revisité pistache et framboise</h4><p class="text-sm text-gray-400 font-light mt-1">Biscuits cuillère faits maison, mascarpone aérien</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">10 €</span>
+        </div>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Moelleux chocolat grand cru</h4><p class="text-sm text-gray-400 font-light mt-1">Cœur coulant, glace vanille bourbon de Madagascar</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">11 €</span>
+        </div>
+        <div class="dish flex justify-between items-baseline border-b border-white/5 pb-4">
+          <div><h4 class="font-semibold text-lg">Assiette de fromages affinés</h4><p class="text-sm text-gray-400 font-light mt-1">Sélection de notre maître caviste, confiture de cerises noires</p></div>
+          <span class="font-serif text-sublim-blue font-bold ml-4">13 €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Histoire : textes à adapter avec la vraie histoire du restaurant -->
+<section id="about" class="py-24 px-6">
+  <div class="max-w-5xl mx-auto grid md:grid-cols-5 gap-12 items-center">
+    <div class="md:col-span-3 reveal">
+      <h2 class="font-serif text-4xl font-bold mb-6">Une table pensée comme une <span class="italic text-sublim-blue font-normal">petite scène</span></h2>
+      <!-- À COMPLÉTER : remplacer par l’histoire réelle (création, chef, inspirations) -->
+      <p class="text-gray-300 font-light leading-relaxed mb-4 max-w-prose">Au 9 rue Thiers, Le Sublim a installé sa cuisine au centre de Belfort avec une idée simple : prendre de bons produits et les faire parler, sans artifice.</p>
+      <p class="text-gray-300 font-light leading-relaxed max-w-prose">La carte suit les saisons. Les desserts et les biscuits sont faits maison, et chaque assiette est dressée pour qu’on la regarde avant de la goûter.</p>
+    </div>
+    <dl class="md:col-span-2 space-y-6 reveal">
+      <div class="border-l-2 border-sublim-blue pl-5"><dt class="font-serif text-xl text-sublim-blue">Produits frais</dt><dd class="text-sm text-gray-400 font-light mt-1">Cuisinés chaque jour, selon l’arrivage.</dd></div>
+      <div class="border-l-2 border-sublim-navy pl-5"><dt class="font-serif text-xl text-sublim-blue">Fait maison</dt><dd class="text-sm text-gray-400 font-light mt-1">Des biscuits aux desserts, tout est préparé sur place.</dd></div>
+      <div class="border-l-2 border-sublim-blue pl-5"><dt class="font-serif text-xl text-sublim-blue">Centre-ville</dt><dd class="text-sm text-gray-400 font-light mt-1">À deux pas de la vieille ville de Belfort.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- Réservation -->
+<section id="reserver" class="py-24 px-6 bg-sublim-card/50 border-t border-white/5">
+  <div class="max-w-xl mx-auto reveal">
+    <h2 class="font-serif text-4xl font-bold mb-3 text-center">Réserver une table</h2>
+    <p class="text-gray-400 text-center mb-10">Préparez votre demande, puis confirmez-la par téléphone.</p>
+    <form id="resa" class="space-y-5" novalidate>
+      <div class="grid sm:grid-cols-2 gap-5">
+        <label class="block text-sm">Nom
+          <input id="nom" required class="mt-1.5 w-full bg-sublim-dark border border-white/15 rounded-lg px-4 py-3 focus:border-sublim-blue outline-none" autocomplete="name">
+        </label>
+        <label class="block text-sm">Nombre de personnes
+          <select id="pers" class="mt-1.5 w-full bg-sublim-dark border border-white/15 rounded-lg px-4 py-3 focus:border-sublim-blue outline-none">
+            <option>2</option><option>1</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+          </select>
+        </label>
+        <label class="block text-sm">Date
+          <input id="date" type="date" required class="mt-1.5 w-full bg-sublim-dark border border-white/15 rounded-lg px-4 py-3 focus:border-sublim-blue outline-none [color-scheme:dark]">
+        </label>
+        <label class="block text-sm">Service
+          <select id="svc" class="mt-1.5 w-full bg-sublim-dark border border-white/15 rounded-lg px-4 py-3 focus:border-sublim-blue outline-none">
+            <option value="12h00">Déjeuner (12h00)</option><option value="19h30" selected>Dîner (19h30)</option><option value="20h30">Dîner (20h30)</option>
+          </select>
+        </label>
+      </div>
+      <button class="w-full bg-sublim-blue text-black font-semibold py-4 rounded-full hover:bg-white transition-colors">Préparer ma demande</button>
+      <p id="resa-msg" class="text-center text-sm min-h-[3rem]" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<!-- Contact -->
+<footer id="contact" class="py-16 px-6 border-t border-white/10 bg-[#060a14] text-center">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="font-serif text-3xl font-bold mb-6 text-sublim-blue">Le Sublim</h2>
+    <p class="text-gray-300 mb-2">9 rue Thiers, 90000 Belfort</p>
+    <p class="mb-8"><a href="tel:0363143060" class="text-sublim-blue hover:text-white transition-colors">03 63 14 30 60</a></p>
+    <ul class="max-w-sm mx-auto text-sm text-gray-400 mb-8 divide-y divide-white/10" id="hours"></ul>
+    <a class="inline-block text-sm border border-white/20 rounded-full px-6 py-3 hover:bg-white/10 transition-colors" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Le+Sublim+9+rue+Thiers+90000+Belfort">Voir sur la carte</a>
+    <p class="text-xs text-gray-500 mt-10">© 2026 Le Sublim – Tous droits réservés.</p>
+  </div>
+</footer>
+
+<script>
+/* Horaires : 0 = dimanche … 6 = samedi, créneaux en minutes */
+const SLOTS = [[720,840],[1140,1350]];
+const OPEN_DAYS = [2,3,4,5,6];
+const DAYS = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+
+/* Ouvert / fermé en direct (heure de Paris) */
+function parisNow(){
+  const p = new Intl.DateTimeFormat('fr-FR',{timeZone:'Europe/Paris',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+  const g = t => p.find(x=>x.type===t).value;
+  const wd = {'dim.':0,'lun.':1,'mar.':2,'mer.':3,'jeu.':4,'ven.':5,'sam.':6}[g('weekday')];
+  return { d: wd, m: (+g('hour')%24)*60 + +g('minute') };
+}
+function fmt(m){ return String(Math.floor(m/60)).padStart(2,'0')+'h'+String(m%60).padStart(2,'0'); }
+function updateStatus(){
+  const {d,m} = parisNow(), el = document.getElementById('status');
+  const open = OPEN_DAYS.includes(d) && SLOTS.some(([a,b]) => m>=a && m<b);
+  let txt;
+  if (open) { const s = SLOTS.find(([a,b]) => m>=a && m<b); txt = 'Ouvert maintenant, jusqu’à ' + fmt(s[1]); }
+  else {
+    const next = OPEN_DAYS.includes(d) ? SLOTS.find(([a]) => a>m) : null;
+    txt = next ? 'Fermé, réouverture à ' + fmt(next[0]) : 'Fermé, réouverture mardi à 12h00'.replace('mardi', (d===1||d===0) ? 'mardi' : 'demain');
+    if (!next && d>=2 && d<6) txt = 'Fermé, réouverture demain à 12h00';
+    if (!next && d===6) txt = 'Fermé, réouverture mardi à 12h00';
+  }
+  el.innerHTML = '<span class="dot w-2.5 h-2.5 rounded-full '+(open?'bg-green-500 text-green-500':'bg-gray-500 text-gray-500')+'"></span>' + txt;
+}
+updateStatus(); setInterval(updateStatus, 60000);
+
+/* Tableau des horaires, jour courant en doré */
+(function(){
+  const today = parisNow().d, ul = document.getElementById('hours');
+  [2,3,4,5,6,0,1].forEach(d => {
+    const on = OPEN_DAYS.includes(d);
+    ul.insertAdjacentHTML('beforeend','<li class="flex justify-between py-2 '+(d===today?'text-sublim-blue font-medium':'')+'"><span>'+DAYS[d]+'</span><span>'+(on?'12h00–14h00 / 19h00–22h30':'Fermé')+'</span></li>');
+  });
+})();
+
+/* Filtre de la carte */
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t===b));
+  document.querySelectorAll('[data-group]').forEach(g => {
+    g.style.display = (b.dataset.f==='all' || g.dataset.group===b.dataset.f) ? '' : 'none';
+  });
+}));
+
+/* Apparition au défilement */
+const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }), {threshold:.15});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* Réservation : prépare la demande puis renvoie vers le téléphone */
+const dateEl = document.getElementById('date');
+dateEl.min = new Date().toISOString().slice(0,10);
+document.getElementById('resa').addEventListener('submit', e => {
+  e.preventDefault();
+  const msg = document.getElementById('resa-msg'), nom = document.getElementById('nom').value.trim();
+  if (!nom || !dateEl.value) { msg.className='text-center text-sm min-h-[3rem] text-red-400'; msg.textContent='Indiquez votre nom et une date.'; return; }
+  const day = new Date(dateEl.value+'T12:00:00').getDay();
+  if (!OPEN_DAYS.includes(day)) { msg.className='text-center text-sm min-h-[3rem] text-red-400'; msg.textContent='Le restaurant est fermé ce jour-là. Choisissez du mardi au samedi.'; return; }
+  const d = new Date(dateEl.value+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  msg.className='text-center text-sm min-h-[3rem] text-gray-300';
+  msg.innerHTML = nom+', table pour '+document.getElementById('pers').value+' le '+d+' à '+document.getElementById('svc').value+'.<br><a class="text-sublim-blue underline" href="tel:0363143060">Appelez le 03 63 14 30 60 pour confirmer</a>';
+});
+
+/* Braises dorées qui s’élèvent */
+(function(){
+  const c = document.getElementById('embers'), x = c.getContext('2d');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let w, h, ps = [];
+  const size = () => { w = c.width = c.offsetWidth; h = c.height = c.offsetHeight; };
+  const mk = (start) => ({ x: Math.random()*w, y: start ? Math.random()*h : h+10, r: Math.random()*1.8+.4, v: Math.random()*.5+.2, a: Math.random()*.6+.2, s: Math.random()*Math.PI*2 });
+  size(); addEventListener('resize', size);
+  for (let i=0;i<70;i++) ps.push(mk(true));
+  (function loop(){
+    x.clearRect(0,0,w,h);
+    ps.forEach((p,i) => {
+      p.y -= p.v; p.s += .015; p.x += Math.sin(p.s)*.35;
+      const fade = Math.min(1, p.y/(h*.5));
+      x.beginPath(); x.arc(p.x,p.y,p.r,0,6.283);
+      x.fillStyle = 'rgba(91,141,239,'+(p.a*fade)+')'; x.shadowColor='#5b8def'; x.shadowBlur=8; x.fill();
+      if (p.y < -10) ps[i] = mk(false);
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>
